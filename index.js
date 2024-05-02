@@ -29,7 +29,7 @@ const uploadOnCloudinary = async (localFilePath, fileName) => {
     });
     //File has been uploaded successful
     console.log("File is uploaded on cloudinary",
-    response.url, sanitizedFileName);
+    response.url);
     return response
   } catch (error){
     fs.unlinkSync(localFilePath) //remove the locally saved temp file as the upload
@@ -80,6 +80,7 @@ app.post("/BackEnd/upload", upload.single("file"), async function (req, res) {
       if (!response) {
           throw new Error("Failed to upload file to Cloudinary");
       }
+      console.log("Modified FileName:", modifiedFileName);
       res.status(200).json({ FileName: modifiedFileName}); // Respond with the Cloudinary URL of the uploaded image
   } catch (error) {
       console.error("Error uploading file:", error);
