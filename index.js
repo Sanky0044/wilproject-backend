@@ -57,11 +57,29 @@ const storage = multer.diskStorage({
 //})
 
 const upload = multer({ storage });
-
+/*
 app.post("/BackEnd/upload", upload.single("file"), function (req, res) {
     const file = req.file;
     res.status(200).json(file.filename);
   });
+*/
+  app.post("/BackEnd/upload", upload.single("file"), async function (req, res) {
+    try {
+        const file = req.file;
+        if (!file) {
+            throw new Error("No file uploaded");
+        }
+        const response = await uploadOnCloudinary(file.path);
+        if (!response) {
+            throw new Error("Failed to upload file to Cloudinary");
+        }
+        res.status(200).json({ url: response.url }); // Respond with the Cloudinary URL of the uploaded image
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        res.status(500).json({ error: "Failed to upload file" });
+    }
+});
+
 
 app.use("/BackEnd/auth", authRoutes)
 app.use("/BackEnd/posts", postRoutes)
