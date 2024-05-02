@@ -17,19 +17,21 @@ cloudinary.config({
   api_secret: '8l30kWL7eEIfNSnk_M8YQx9Y8jk' 
 });
 
-const uploadOnCloudinary = async (localFilePath) => {
+const uploadOnCloudinary = async (localFilePath, fileName) => {
   try{
-    if (!localFilePath) return null
+    if (!localFilePath) return null;
     //upload the file on cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto"
-    })
+      resource_type: "auto",
+      public_id: fileName,
+    });
     //File has been uploaded successful
     console.log("File is uploaded on cloudinary",
-    response.url);
+    response.url, response.fileName);
     return response
   } catch (error){
     fs.unlinkSync(localFilePath) //remove the locally saved temp file as the upload
+    console.error("Error uploading file to cloudinary:", error);
     return null;
   }
 }
@@ -69,11 +71,12 @@ app.post("/BackEnd/upload", upload.single("file"), function (req, res) {
         if (!file) {
             throw new Error("No file uploaded");
         }
-        const response = await uploadOnCloudinary(file.path);
+        const modifiedFileName = Date.now() + file.originalname;
+        const response = await uploadOnCloudinary(file.path, modifiedFileName);
         if (!response) {
             throw new Error("Failed to upload file to Cloudinary");
         }
-        res.status(200).json({ fileName: file.originalname, cloudinaryUrl: response.url }); // Respond with the Cloudinary URL of the uploaded image
+        res.status(200).json({ FileName: modifiedFileName, cloudinaryUrl: response.url }); // Respond with the Cloudinary URL of the uploaded image
     } catch (error) {
         console.error("Error uploading file:", error);
         res.status(500).json({ error: "Failed to upload file" });
