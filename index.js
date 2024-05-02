@@ -6,8 +6,8 @@ import userRoutes from "./routes/users.js"
 import cookieParser from "cookie-parser";
 import multer from "multer";
 
-/*
-import fs from fs; //file server
+
+import fs from 'fs'; //file server
 
 import {v2 as cloudinary} from 'cloudinary';
           
@@ -33,7 +33,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     return null;
   }
 }
-*/
+
 
 const app = express ()
 
@@ -45,7 +45,7 @@ app.use(cors(
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, ".https://wilproject-frontend.onrender.com/upload");
+      cb(null, "./uploads");
     },
     filename: function (req, file, cb) {
       cb(null, Date.now() + file.originalname);
