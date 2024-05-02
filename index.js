@@ -21,9 +21,11 @@ const uploadOnCloudinary = async (localFilePath, fileName) => {
   try{
     if (!localFilePath) return null;
     //upload the file on cloudinary
+    // Remove spaces from the filename
+    const sanitizedFileName = fileName.replace(/\s+/g, '');
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
-      public_id: fileName,
+      public_id: sanitizedFileName,
     });
     //File has been uploaded successful
     console.log("File is uploaded on cloudinary",
@@ -65,21 +67,23 @@ app.post("/BackEnd/upload", upload.single("file"), function (req, res) {
     res.status(200).json(file.filename);
   });
 */
-  app.post("/BackEnd/upload", upload.single("file"), async function (req, res) {
-    try {
-        const file = req.file;
-        if (!file) {
-            throw new Error("No file uploaded");
-        }
-        const modifiedFileName = Date.now() + file.originalname;
-        const response = await uploadOnCloudinary(file.path, modifiedFileName);
-        if (!response) {
-            throw new Error("Failed to upload file to Cloudinary");
-        }
-        res.status(200).json({ FileName: modifiedFileName, cloudinaryUrl: response.url }); // Respond with the Cloudinary URL of the uploaded image
-    } catch (error) {
-        console.error("Error uploading file:", error);
-        res.status(500).json({ error: "Failed to upload file" });
+app.post("/BackEnd/upload", upload.single("file"), async function (req, res) {
+  try {
+      const file = req.file;
+      if (!file) {
+          throw new Error("No file uploaded");
+      }
+      const modifiedFileName = (Date.now() + file.originalname).replace(/\s+/g, '');
+      // Remove spaces from the filename
+      //const sanitizedFileName = fileName.replace(/\s+/g, '');
+      const response = await uploadOnCloudinary(file.path, modifiedFileName);
+      if (!response) {
+          throw new Error("Failed to upload file to Cloudinary");
+      }
+      res.status(200).json({ FileName: modifiedFileName}); // Respond with the Cloudinary URL of the uploaded image
+  } catch (error) {
+      console.error("Error uploading file:", error);
+      res.status(500).json({ error: "Failed to upload file" });
     }
 });
 
