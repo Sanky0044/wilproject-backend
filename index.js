@@ -81,7 +81,7 @@ app.post("/BackEnd/upload", upload.single("file"), async function (req, res) {
           throw new Error("Failed to upload file to Cloudinary");
       }
       console.log("Modified FileName:", modifiedFileName);
-      res.status(200).json({ FileName: modifiedFileName}); // Respond with the Cloudinary URL of the uploaded image
+      res.status(200).json(file.modifiedFileName); // Respond with the Cloudinary URL of the uploaded image
   } catch (error) {
       console.error("Error uploading file:", error);
       res.status(500).json({ error: "Failed to upload file" });
