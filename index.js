@@ -22,7 +22,7 @@ const uploadOnCloudinary = async (localFilePath, fileName) => {
     if (!localFilePath) return null;
     //upload the file on cloudinary
     // Remove spaces from the filename
-    const sanitizedFileName = fileName.replace(/\s+/g, '');
+    const sanitizedFileName = fileName.replace(/\s+/g, '').replace(/\.[^.]+$/, '');
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
       public_id: sanitizedFileName,
